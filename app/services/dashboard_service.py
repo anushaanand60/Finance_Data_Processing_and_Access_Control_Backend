@@ -11,10 +11,22 @@ def get_dashboard_summary(db: Session):
     # Category-wise totals : Here, we're doing Group By on both category and type (income/expense) so that we can easily distinguish, for example, income vs expense in the same category
     category_totals = base_query.with_entities(Transaction.category, Transaction.type, func.sum(Transaction.amount).label("total")).group_by(Transaction.category, Transaction.type).all()
     cats = [{"category": row.category, "type": row.type, "total": float(row.total)} for row in category_totals]
+    
+    # Recent activity : Here we're ordering by date DESC and then by id DESC to ensure that if there are multiple transactions on the same date, the most recent one appears first
+    recent = base_query.order_by(Transaction.date.desc(), Transaction.id.desc()).limit(5).all()
 
     return {
         "total_income": float(income),
         "total_expenses": float(expense),
         "net_balance": float(income) - float(expense),
-        "category_totals": cats
+        "category_totals": cats,
+        "recent_activity": [
+            {
+                "id": r.id, 
+                "amount": float(r.amount), 
+                "type": r.type, 
+                "category": r.category, 
+                "date": str(r.date)
+            } for r in recent
+        ]
     }
