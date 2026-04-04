@@ -38,3 +38,12 @@ def create_transaction(db: Session, transaction_in: TransactionCreate, user_id: 
     db.commit()
     db.refresh(db_transaction)
     return db_transaction
+
+def update_transaction(db: Session, db_transaction: Transaction, transaction_in: TransactionUpdate):
+    update_data = transaction_in.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(db_transaction, field, value)
+    db.add(db_transaction)
+    db.commit()
+    db.refresh(db_transaction)
+    return db_transaction

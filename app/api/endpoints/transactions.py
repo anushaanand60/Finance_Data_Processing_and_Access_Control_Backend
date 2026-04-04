@@ -27,3 +27,17 @@ def read_transaction(transaction_id: int, db: Session = Depends(deps.get_db), cu
 @router.post("/", response_model=Transaction)
 def create_transaction(*, db: Session = Depends(deps.get_db), transaction_in: TransactionCreate, current_user: UserModel = Depends(allow_admin)) -> Any:
     return transaction_service.create_transaction(db=db, transaction_in=transaction_in, user_id=current_user.id)
+
+@router.put("/{transaction_id}", response_model=Transaction)
+def update_transaction(*, db: Session = Depends(deps.get_db), transaction_id: int, transaction_in: TransactionUpdate, current_user: UserModel = Depends(allow_admin)) -> Any:
+    transaction = transaction_service.get_transaction(db, transaction_id=transaction_id)
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction_service.update_transaction(db=db, db_transaction=transaction, transaction_in=transaction_in)
+
+@router.delete("/{transaction_id}", response_model=Transaction)
+def delete_transaction(*, db: Session = Depends(deps.get_db), transaction_id: int, current_user: UserModel = Depends(allow_admin)) -> Any:
+    transaction = transaction_service.get_transaction(db, transaction_id=transaction_id)
+    if not transaction:
+        raise HTTPException(status_code=404, detail="Transaction not found")
+    return transaction_service.delete_transaction(db=db, db_transaction=transaction)
