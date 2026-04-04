@@ -18,3 +18,21 @@ def create_user(db: Session, user_in: UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+def update_user(db: Session, db_user: User, user_in: UserUpdate):
+    update_data = user_in.model_dump(exclude_unset=True)
+    if "password" in update_data:
+        hashed_password = get_password_hash(update_data["password"])
+        del update_data["password"]
+        update_data["hashed_password"] = hashed_password
+    for field, value in update_data.items():
+        setattr(db_user, field, value)
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+
+def delete_user(db: Session, db_user: User):
+    db.delete(db_user)
+    db.commit()
+    return db_user
