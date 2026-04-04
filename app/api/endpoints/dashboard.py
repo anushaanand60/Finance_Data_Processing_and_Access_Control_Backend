@@ -13,4 +13,6 @@ allow_all_roles = deps.RoleChecker([Role.viewer, Role.analyst, Role.admin])
 def read_dashboard_summary(db: Session = Depends(deps.get_db), current_user: UserModel = Depends(allow_all_roles)) -> Any:
     return dashboard_service.get_dashboard_summary(db)
 
-
+@router.get("/trends", response_model=list)
+def read_dashboard_trends(db: Session = Depends(deps.get_db), period: str = Query("monthly", pattern="^(monthly|weekly)$"), current_user: UserModel = Depends(allow_all_roles)) -> Any:
+    return dashboard_service.get_trends(db, period=period)

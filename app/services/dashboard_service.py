@@ -30,3 +30,20 @@ def get_dashboard_summary(db: Session):
             } for r in recent
         ]
     }
+
+def get_trends(db: Session, period: str = "monthly"):
+    # period can be monthly or weekly so we'll also dynamically adjust the grouping logic accordingly
+    base_query = db.query(Transaction).filter(Transaction.is_deleted == False)
+    if period == "monthly":
+        # group by year and month
+        group_fields = [extract('year', Transaction.date).label('year'), extract('month', Transaction.date).label('month'), Transaction.type]
+    else:
+        # group by year and week; this is likely more useful for a trend analysis on shorter time periods.
+        group_fields = [extract('year', Transaction.date).label('year'), extract('week', Transaction.date).label('week'), Transaction.type]
+    trends = base_query.with_entities(*group_fields, func.sum(Transaction.amount).label("total")).group_by(*group_fields).order_by(group_fields[0], group_fields[1]).all()
+    result = []
+    for row in trends:
+        # row structure here would be (year, month/week, type, total)
+        obj = {"year": int(row[0]), period: int(row[1]), "type": row[2], "total": float(row[3])}
+        result.append(obj)    
+    return result
