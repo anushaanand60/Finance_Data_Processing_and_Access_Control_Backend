@@ -47,3 +47,10 @@ def update_transaction(db: Session, db_transaction: Transaction, transaction_in:
     db.commit()
     db.refresh(db_transaction)
     return db_transaction
+
+# Adding the soft delete feature here 
+def delete_transaction(db: Session, db_transaction: Transaction):
+    db_transaction.is_deleted = True
+    db.add(db_transaction)
+    db.commit()
+    return db_transaction
