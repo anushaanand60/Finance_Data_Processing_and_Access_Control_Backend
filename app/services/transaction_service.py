@@ -24,7 +24,10 @@ def get_transactions(db: Session, skip: int = 0, limit: int = 50, type_filter: O
     return {"total": total, "items": items}
 
 def create_transaction(db: Session, transaction_in: TransactionCreate, user_id: int):
-    db_transaction = Transaction(**transaction_in.model_dump(), created_by_id=user_id)
+    create_data = transaction_in.model_dump(exclude_unset=True)
+    if create_data.get("date") is None:
+        create_data.pop("date", None)
+    db_transaction = Transaction(**create_data, created_by_id=user_id)
     db.add(db_transaction)
     db.commit()
     db.refresh(db_transaction)
