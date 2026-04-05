@@ -130,6 +130,19 @@ python -m uvicorn app.main:app --reload
 API documentation will be available at:  
 [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
+## Deployment and Demo
+
+The backend has been deployed on Render, demonstrating its readiness for real-world usage with cloud-hosted infrastructure.
+
+The deployment includes:
+- Fully functional API endpoints
+- Database integration
+- Environment-based configuration
+
+A detailed demo video showcasing the system architecture, API interactions, role-based access control, and dashboard analytics is available below:
+
+- Demo Video: https://drive.google.com/file/d/15Ejc0auFeLH-UXldVMn29mfpuqspwLfV/view?usp=sharing
+
 ## API Overview
 
 ### Authentication
